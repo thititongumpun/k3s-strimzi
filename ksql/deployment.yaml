@@ -17,7 +17,6 @@ spec:
       containers:
       - name: ksqldb
         image: confluentinc/ksqldb-server:0.28.2
-        imagePullPolicy: Never
         ports:
         - containerPort: 8088
         env:
