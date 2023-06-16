@@ -1,0 +1,26 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: jdbc-source-connector
+  labels:
+    strimzi.io/cluster: my-connect-cluster
+spec:
+  class: io.confluent.connect.jdbc.JdbcSourceConnector
+  tasksMax: 1
+  autoRestart:
+    enabled: true
+  config:
+    connector.class: "io.confluent.connect.jdbc.JdbcSourceConnector"
+    connection.url: "jdbc:postgresql://10.43.127.204:5432/postgres?user=root&password=p@ssw0rd"
+    db.name: "postgres"
+    mode: "incrementing"
+    incrementing.column.name: "id"
+    poll.interval.ms: "1000"
+    producer.override.batch.size: "1000000"
+    producer.override.linger.ms: "100"
+    validate.non.null: "false"
+    table.whitelist: "books"
+    topic.prefix: "jdbc_"
+    key.converter: "org.apache.kafka.connect.json.JsonConverter"
+    value.converter: "org.apache.kafka.connect.json.JsonConverter"
+    value.converter.schemas.enable: "true"

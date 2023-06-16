@@ -1,0 +1,36 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: debezium-source-connector
+  labels:
+    strimzi.io/cluster: my-connect-cluster
+spec:
+  class: io.debezium.connector.postgresql.PostgresConnector
+  autoRestart:
+    enabled: true
+  config:
+    connector.class: io.debezium.connector.postgresql.PostgresConnector
+    value.converter: "org.apache.kafka.connect.json.JsonConverter"
+    value.converter.schemas.enable: "true"
+    database.hostname : "10.43.127.204"
+    database.port : "5432"
+    database.user : "root"
+    database.password : "p@ssw0rd"
+    database.dbname : "books"
+    include.schema.changes: "true"
+    transforms: "unwrap"
+    transforms.unwrap.type: "io.debezium.transforms.ExtractNewRecordState"
+    transforms.unwrap.drop.tombstones: "false"
+    transforms.unwrap.delete.handling.mode: "rewrite"
+    transforms.unwrap.add.fields: "table,op,source.ts_ms"
+    topic.creation.default.partitions: "1"
+    topic.creation.default.replication.factor: "1"
+    topic.creation.default.min.insync.replicas: "1"
+    poll.interval.ms: "1000"
+    producer.override.batch.size: "1000000"
+    producer.override.linger.ms: "100"
+    validate.non.null: "false"
+    table.include.list: "public.books"
+    topic.prefix: "public_"
+    plugin.name: "pgoutput"
+    topic.creation.enable: "true"
