@@ -28,3 +28,22 @@ spec:
           value: "true"
         - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
           value: "true"
+        - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KSQL_KSQL_STREAMS_REPLICATION_FACTOR
+          value: "1"
+        - name: KSQL_KSQL_INTERNAL_TOPIC_REPLICAS
+          value: "1"
+        - name: KSQL_KSQL_STREAMS_NUM_STREAM_THREADS
+          value: "1"
+        - name: KSQL_CONFIG_DIR
+          value: "/etc/ksqldb"
+        - name: KSQL_KSQL_EXTENSION_DIR
+          value: "/etc/ksqldb/ext/"
+        volumeMounts:
+        - name: ksqldb-volume
+          mountPath: /tmp/kafka-streams/
+      volumes:
+        - name: ksqldb-volume
+          persistentVolumeClaim:
+            claimName: ksqldb-pv-claim

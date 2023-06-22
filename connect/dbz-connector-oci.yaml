@@ -1,7 +1,7 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaConnector
 metadata:
-  name: debezium-source-connector
+  name: debezium-source-connector-789
   labels:
     strimzi.io/cluster: my-connect-cluster
 spec:
@@ -16,7 +16,7 @@ spec:
     database.port : "5432"
     database.user : "root"
     database.password : "p@ssw0rd"
-    database.dbname : "books"
+    database.dbname : "devdb"
     include.schema.changes: "true"
     transforms: "unwrap"
     transforms.unwrap.type: "io.debezium.transforms.ExtractNewRecordState"
@@ -30,7 +30,7 @@ spec:
     producer.override.batch.size: "1000000"
     producer.override.linger.ms: "100"
     validate.non.null: "false"
-    table.include.list: "public.books"
-    topic.prefix: "public_"
+    table.include.list: "public.Products"
+    topic.prefix: "postgres_"
     plugin.name: "pgoutput"
     topic.creation.enable: "true"
