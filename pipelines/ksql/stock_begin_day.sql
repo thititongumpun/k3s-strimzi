@@ -1,49 +1,26 @@
-CREATE STREAM STOCK_BEGIN_DAY_ST (
+CREATE STREAM NOT_STOCK_BEGIN_DAY_ST (
     `available_stock` DOUBLE,
-    `internalcode` VARCHAR
+    `internalcode` VARCHAR,
+    `MST_BAR` VARCHAR,
+    `STORECODE` VARCHAR
   ) WITH (
     KAFKA_TOPIC = 'bigc_poc.public.stock_begin_day', 
     VALUE_FORMAT = 'JSON',
     PARTITIONS = 3
 );
 
--- CREATE TABLE poc_ddbranch_tb WITH (
---     KAFKA_TOPIC = 'poc_ddbranch_tb', 
---     FORMAT = 'AVRO',
---     PARTITIONS = 3
---   ) AS 
---   SELECT
---     `ROWKEY`->`BR_CODE` as `ROWKEY`,
---     LATEST_BY_OFFSET(`BR_CODE`, false) AS `BR_CODE`,
---     LATEST_BY_OFFSET(`BR_NAME`, false) AS `BR_NAME`,
---     LATEST_BY_OFFSET(`ADD1`, false) AS `ADD1`,
---     LATEST_BY_OFFSET(`ADD2`, false) AS `ADD2`,
---     LATEST_BY_OFFSET(`PROVINCE_CODE`, false) AS `PROVINCE_CODE`,
---     LATEST_BY_OFFSET(`POST_CODE`, false) AS `POST_CODE`,
---     LATEST_BY_OFFSET(`TELEPHONE`, false) AS `TELEPHONE`,
---     LATEST_BY_OFFSET(`FAX`, false) AS `FAX`,
---     LATEST_BY_OFFSET(`BR_SYM`, false) AS `BR_SYM`,
---     LATEST_BY_OFFSET(`ACTIVE_ROW`, false) AS `ACTIVE_ROW`,
---     LATEST_BY_OFFSET(`INSERT_LOGIN`, false) AS `INSERT_LOGIN`,
---     LATEST_BY_OFFSET(`INSERT_DATE`, false) AS `INSERT_DATE`,
---     LATEST_BY_OFFSET(`UPDATE_LOGIN`, false) AS `UPDATE_LOGIN`,
---     LATEST_BY_OFFSET(`UPDATE_DATE`, false) AS `UPDATE_DATE`,
---     LATEST_BY_OFFSET(`BR_VAT_CODE`, false) AS `BR_VAT_CODE`,
---     LATEST_BY_OFFSET(`ENG_BRANCHNAME`, false) AS `ENG_BRANCHNAME`,
---     LATEST_BY_OFFSET(`ENG_ADD1`, false) AS `ENG_ADD1`,
---     LATEST_BY_OFFSET(`ENG_ADD2`, false) AS `ENG_ADD2`,
---     LATEST_BY_OFFSET(`BR_TYPE`, false) AS `BR_TYPE`,
---     LATEST_BY_OFFSET(`REGION_NAME`, false) AS `REGION_NAME`,
---     LATEST_BY_OFFSET(`DBSERVER`, false) AS `DBSERVER`,
---     LATEST_BY_OFFSET(`APPSERVER`, false) AS `APPSERVER`,
---     LATEST_BY_OFFSET(`IMAGEFOLDER`, false) AS `IMAGEFOLDER`,
---     LATEST_BY_OFFSET(`DOCFOLDER`, false) AS `DOCFOLDER`,
---     LATEST_BY_OFFSET(`VSSERVER`, false) AS `VSSERVER`,
---     LATEST_BY_OFFSET(`__TABLE`, false) AS `__TABLE`,
---     LATEST_BY_OFFSET(`__OP`, false) AS `__OP`,
---     LATEST_BY_OFFSET(`__SOURCE_TS_MS`, false) AS `__SOURCE_TS_MS`,
---     LATEST_BY_OFFSET(`__DELETED`, false) AS `__DELETED`,
---     LATEST_BY_OFFSET(`ROWTIME`, false) AS `DDBRANCH_TS`
---   FROM poc_ddbranch_st
---   GROUP BY `ROWKEY`->`BR_CODE`
---   EMIT CHANGES;
+--TBL
+CREATE TABLE NOT_STOCK_BEGIN_DAY_TB WITH (
+    KAFKA_TOPIC = 'NOT_STOCK_BEGIN_DAY_TB', 
+    KEY_FORMAT = 'JSON',
+    PARTITIONS = 3
+  ) AS 
+  SELECT
+    STRUCT(`storecode` := `STORECODE`,`internalcode` := `INTERNALCODE`, `mst_barcode`:= `MST_BARCODE`) AS `Key`,
+    LATEST_BY_OFFSET(`internalcode`, false) AS `INTERNALCODE`,
+    LATEST_BY_OFFSET(`available_stock`, false) AS `AVAILABLE_STOCK`,
+    LATEST_BY_OFFSET(`storecode`, false) AS `STORECODE`,
+    LATEST_BY_OFFSET(`mst_barcode`, FALSE) AS `mst_barcode`
+  FROM STOCK_BEGIN_DAY_ST
+  GROUP BY STRUCT(`storecode` := `STORECODE`,`internalcode` := `INTERNALCODE`, `mst_barcode`:= `MST_BARCODE`) 
+  EMIT CHANGES;
